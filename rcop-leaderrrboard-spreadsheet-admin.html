@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RCOP Admin Portal</title>
+    <style>
+.title-wrap {
+    position: relative;
+    margin-bottom: 30px;
+}
+
+.title-wrap h1 {
+    margin-bottom: 0;
+}
+
+.designer-watermark {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.78);
+    font-weight: 500;
+    letter-spacing: 0.3px;
+    font-style: italic;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.25);
+    pointer-events: none;
+    user-select: none;
+}
+
+@media (max-width: 768px) {
+    .designer-watermark {
+        position: static;
+        display: block;
+        text-align: center;
+        margin-top: 8px;
+        font-size: 11px;
+    }
+}
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 20px;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .admin-status {
+            font-size: 14px;
+            font-weight: 600;
+            color: #444;
+        }
+
+        .login-box {
+            display: none;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .login-box input {
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .add-student-section {
+            display: none;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .add-student-section input {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .add-student-section input:focus,
+        .login-box input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f1f1f1;
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background: #e5e5e5;
+        }
+
+        .tier-info {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .tier-badge {
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .tier-platinum {
+            background: linear-gradient(135deg, #c0c0c0 0%, #e8e8e8 100%);
+            border: 3px solid #a0a0a0;
+        }
+
+        .tier-gold {
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+            border: 3px solid #daa520;
+        }
+
+        .tier-diamond {
+            background: linear-gradient(135deg, #b9f2ff 0%, #8ecae6 100%);
+            border: 3px solid #219ebc;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1400px;
+        }
+
+        th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 8px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 12px;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            vertical-align: middle;
+        }
+
+        td {
+            padding: 10px 8px;
+            border-bottom: 1px solid #e0e0e0;
+            font-size: 12px;
+        }
+
+        tr:hover {
+            background: #f9f9f9;
+        }
+
+        .student-name {
+            font-weight: 700;
+            color: #333;
+            min-width: 120px;
+        }
+
+        .task-input {
+            width: 50px;
+            padding: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            text-align: center;
+        }
+
+        .task-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .task-value {
+            display: inline-block;
+            min-width: 30px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .total-points {
+            font-weight: 700;
+            font-size: 16px;
+            color: #667eea;
+        }
+
+        .tier-label {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .tier-label-bronze { background: #cd7f32; color: white; }
+        .tier-label-platinum { background: #c0c0c0; color: #333; }
+        .tier-label-gold { background: #ffd700; color: #333; }
+        .tier-label-diamond { background: #8ecae6; color: #fff; }
+
+        .category-header {
+            text-align: center;
+            font-size: 13px;
+            font-weight: 700;
+            color: white;
+            border-bottom: 2px solid rgba(255,255,255,0.25);
+            letter-spacing: 0.2px;
+        }
+
+        .category-ambassador {
+            background: #1e3a8a !important;
+        }
+
+        .category-community {
+            background: #166534 !important;
+        }
+
+        .category-social {
+            background: #be185d !important;
+        }
+
+        .category-graphics {
+            background: #9a3412 !important;
+        }
+
+        .category-content {
+            background: #5b21b6 !important;
+        }
+
+        .task-header {
+            font-size: 10px;
+            line-height: 1.2;
+            max-width: 80px;
+            text-align: center;
+            color: white;
+            font-weight: 700;
+            border: 1px solid rgba(255,255,255,0.10);
+        }
+
+        .task-ambassador {
+            background: #3b5bcc !important;
+        }
+
+        .task-community {
+            background: #2f855a !important;
+        }
+
+        .task-social {
+            background: #d53f8c !important;
+        }
+
+        .task-graphics {
+            background: #c05621 !important;
+        }
+
+        .task-content {
+            background: #7f56d9 !important;
+        }
+
+        .delete-btn {
+            background: #f44336;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+        }
+
+        .delete-btn:hover {
+            background: #da190b;
+        }
+
+        .rank {
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .rank-1 { color: #ffd700; }
+        .rank-2 { color: #c0c0c0; }
+        .rank-3 { color: #cd7f32; }
+
+        .note {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        .theme-controls {
+            display: none;
+            margin-bottom: 20px;
+            padding: 16px;
+            border: 2px solid #ececec;
+            border-radius: 12px;
+            background: #fafafa;
+        }
+
+        .theme-controls h3 {
+            margin-bottom: 12px;
+            color: #333;
+        }
+
+        .theme-grid {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .theme-grid label {
+            font-size: 14px;
+            color: #333;
+        }
+
+        .theme-grid input,
+        .theme-grid select {
+            margin-left: 6px;
+            padding: 6px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+        }
+
+        @media (max-width: 768px) {
+            .tier-info {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+  <div class="title-wrap">
+    <h1 id="pageTitle">🏆 RCOP Ambassador Leaderboard</h1>
+    <div class="designer-watermark">designed by Pirah M.</div>
+</div>
+        <div class="card">
+            <div class="top-bar">
+                <div class="admin-status" id="adminStatus">Viewer mode</div>
+                <button class="btn btn-secondary" onclick="toggleLogin()">Admin Login</button>
+            </div>
+
+            <div class="login-box" id="loginBox">
+                <input type="email" id="adminEmail" placeholder="Admin email">
+                <input type="password" id="adminPassword" placeholder="Admin password">
+                <button class="btn btn-primary" onclick="adminLogin()">Login</button>
+                <button class="btn btn-secondary" onclick="adminLogout()">Logout</button>
+            </div>
+
+            <div class="note">
+                Everyone can view the leaderboard. Only the admin account can edit it.
+            </div>
+
+            <div class="theme-controls" id="themeControls">
+                <h3>Portal Design Settings</h3>
+                <div class="theme-grid">
+                    <label>Main Color <input type="color" id="themeColor" value="#667eea"></label>
+                    <label>Accent Color <input type="color" id="accentColor" value="#764ba2"></label>
+                    <label>Heading Color <input type="color" id="headingColor" value="#ffffff"></label>
+                    <label>Card Background <input type="color" id="cardBackground" value="#ffffff"></label>
+                    <label>Font
+                        <select id="fontFamily">
+                            <option value="Segoe UI">Segoe UI</option>
+                            <option value="Arial">Arial</option>
+                            <option value="Verdana">Verdana</option>
+                            <option value="Tahoma">Tahoma</option>
+                            <option value="Georgia">Georgia</option>
+                        </select>
+                    </label>
+                    <button 
+class="btn btn-primary" onclick="saveThemeSettings()">Save Design</button>
+                </div>
+            </div>
+
+            <div class="tier-info">
+                <div class="tier-badge tier-platinum">
+                    <div>🥈 Platinum Club</div>
+                    <div style="font-size: 20px; margin-top: 5px;">100 Points</div>
+                    <div style="font-size: 11px; margin-top: 5px;">Mentorship Group Access</div>
+                </div>
+                <div class="tier-badge tier-gold">
+                    <div>🏆 Gold Tier</div>
+                    <div style="font-size: 20px; margin-top: 5px;">200 Points</div>
+                    <div style="font-size: 11px; margin-top: 5px;">Letter of Recommendation</div>
+                </div>
+                <div class="tier-badge tier-diamond">
+                    <div>💎 Diamond Tier</div>
+                    <div style="font-size: 20px; margin-top: 5px;">300 Points</div>
+                    <div style="font-size: 11px; margin-top: 5px;">Observership Support</div>
+                </div>
+            </div>
+
+            <div class="add-student-section" id="adminControls">
+                <input type="text" id="newStudentName" placeholder="Enter student name">
+                <button class="btn btn-primary" onclick="addStudent()">Add Student</button>
+            </div>
+
+            <div class="table-container">
+                <table id="leaderboardTable">
+                    <thead>
+                        <tr>
+                            <th rowspan="2" style="width: 50px;">Rank</th>
+                            <th rowspan="2" style="width: 150px;">Student Name</th>
+                            <th colspan="1" class="category-header category-ambassador">Ambassador</th>
+                            <th colspan="5" class="category-header category-community">Community Outreach</th>
+                            <th colspan="3" class="category-header category-social">Social Media</th>
+                            <th colspan="3" class="category-header category-graphics">Media &amp; Graphics</th>
+                            <th colspan="5" class="category-header category-content">Content Writing</th>
+                            <th rowspan="2" style="width: 100px;">Total Points</th>
+                            <th rowspan="2" style="width: 100px;">Tier</th>
+                            <th rowspan="2" style="width: 80px;">Action</th>
+                        </tr>
+                        <tr>
+                            <th class="task-header task-ambassador">Of the Month<br>(20pts)</th>
+
+                            <th class="task-header task-community">Student Referral<br>(10pts)</th>
+                            <th class="task-header task-community">Event/Session<br>(15pts)</th>
+                            <th class="task-header task-community">Grant Proposal<br>(20pts)</th>
+                            <th class="task-header task-community">Research Group<br>(25pts)</th>
+                            <th class="task-header task-community">Grant Secured<br>(50pts)</th>
+
+                            <th class="task-header task-social">Post<br>(7pts)</th>
+                            <th class="task-header task-social">Carousel<br>(10pts)</th>
+                            <th class="task-header task-social">Reel<br>(15pts)</th>
+
+                            <th class="task-header task-graphics">Poster<br>(7pts)</th>
+                            <th class="task-header task-graphics">Brochure<br>(15pts)</th>
+                            <th class="task-header task-graphics">PPT<br>(20pts)</th>
+
+                            <th class="task-header task-content">Caption<br>(7pts)</th>
+                            <th class="task-header task-content">Carousel Content<br>(10pts)</th>
+                            <th class="task-header task-content">Article<br>(15pts)</th>
+                            <th class="task-header task-content">Newsletter<br>(15pts)</th>
+                            <th class="task-header task-content">Grant Proposal<br>(20pts)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
+      import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
+      import { getFirestore, collection, getDocs, addDoc, updateDoc, deleteDoc, doc, serverTimestamp, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
+
+      const firebaseConfig = {
+        apiKey: "AIzaSyA6w5d40ScY0aE2zrgigyAWkxQWi_pD7bw",
+        authDomain: "rcop-leaderboard.firebaseapp.com",
+        projectId: "rcop-leaderboard",
+        storageBucket: "rcop-leaderboard.firebasestorage.app",
+        messagingSenderId: "106178499326",
+        appId: "1:106178499326:web:bf1471206122ac3b50cbaf"
+      };
+
+      const app = initializeApp(firebaseConfig);
+      const auth = getAuth(app);
+      const db = getFirestore(app);
+
+      window.firebaseApp = app;
+      window.firebaseAuth = auth;
+      window.firebaseDb = db;
+      window.firebaseFns = {
+        signInWithEmailAndPassword,
+        onAuthStateChanged,
+        signOut,
+        collection,
+        getDocs,
+        addDoc,
+        updateDoc,
+        deleteDoc,
+        doc,
+        serverTimestamp,
+        getDoc,
+        setDoc
+      };
+    </script>
+
+    <script>
+        const ADMIN_EMAIL = "mapirah86@gmail.com";
+        const studentCollectionName = "Student";
+
+        const taskPoints = {
+            ambassador_month: 20,
+            outreach_referral: 10,
+            outreach_event: 15,
+            outreach_grant_proposal: 20,
+            outreach_research_group: 25,
+            outreach_grant_secured: 50,
+            social_post: 7,
+            social_carousel: 10,
+            social_reel: 15,
+            graphics_poster: 7,
+            graphics_brochure: 15,
+            graphics_ppt: 20,
+            content_caption: 7,
+            content_carousel: 10,
+            content_article: 15,
+            content_newsletter: 15,
+            content_grant_proposal: 20
+        };
+
+        let students = [];
+        let isAdmin = false;
+
+        function emptyTasks() {
+            const tasks = {};
+            Object.keys(taskPoints).forEach(task => tasks[task] = 0);
+            return tasks;
+        }
+
+        function normalizeStudent(raw, id) {
+            const tasks = { ...emptyTasks(), ...(raw.tasks || {}) };
+            return {
+                id,
+                name: raw.name || raw.names || "",
+                email: raw.email || "",
+                university: raw.university || "",
+                status: raw.status || "active",
+                points: Number(raw.points || raw.Points || 0),
+                rank: Number(raw.rank || 0),
+                tier: raw.tier || "Basic",
+                tasksCompleted: Number(raw.tasksCompleted || raw.taskcompleted || 0),
+                lastUpdated: raw.lastUpdated || null,
+                tasks
+            };
+        }
+
+        function toggleLogin() {
+            const loginBox = document.getElementById("loginBox");
+            loginBox.style.display = loginBox.style.display === "flex" ? "none" : "flex";
+        }
+
+        function waitForFirebase(maxTries = 100) {
+            return new Promise((resolve, reject) => {
+                let tries = 0;
+                const interval = setInterval(() => {
+                    tries++;
+                    if (window.firebaseFns && window.firebaseAuth && window.firebaseDb) {
+                        clearInterval(interval);
+                        resolve();
+                    } else if (tries >= maxTries) {
+                        clearInterval(interval);
+                        reject(new Error("Firebase did not initialize in time."));
+                    }
+                }, 100);
+            });
+        }
+
+        async function adminLogin() {
+            const email = document.getElementById("adminEmail").value.trim();
+            const password = document.getElementById("adminPassword").value;
+
+            if (!email || !password) {
+                alert("Enter admin email and password");
+                return;
+            }
+
+            try {
+                const { signInWithEmailAndPassword } = window.firebaseFns;
+                await signInWithEmailAndPassword(window.firebaseAuth, email, password);
+            } catch (error) {
+                console.error("Login error:", error);
+                alert("Login failed. Check email/password.");
+            }
+        }
+
+        async function adminLogout() {
+            try {
+                const { signOut } = window.firebaseFns;
+                await signOut(window.firebaseAuth);
+            } catch (error) {
+                console.error("Logout error:", error);
+            }
+        }
+
+        async function loadThemeSettings() {
+            try {
+                const { doc, getDoc } = window.firebaseFns;
+                const snap = await getDoc(doc(window.firebaseDb, "siteSettings", "theme"));
+                if (!snap.exists()) return;
+
+                const data = snap.data();
+                document.getElementById("themeColor").value = data.themeColor || "#667eea";
+                document.getElementById("accentColor").value = data.accentColor || "#764ba2";
+                document.getElementById("headingColor").value = data.headingColor || "#ffffff";
+                document.getElementById("cardBackground").value = data.cardBackground || "#ffffff";
+                document.getElementById("fontFamily").value = data.fontFamily || "Segoe UI";
+            } catch (error) {
+                console.error("Could not load theme settings:", error);
+            }
+        }
+
+        async function saveThemeSettings() {
+            if (!isAdmin) {
+                alert("Only admin can change design");
+                return;
+            }
+
+            const themeData = {
+                themeColor: document.getElementById("themeColor").value,
+                accentColor: document.getElementById("accentColor").value,
+                headingColor: document.getElementById("headingColor").value,
+                cardBackground: document.getElementById("cardBackground").value,
+                fontFamily: document.getElementById("fontFamily").value
+            };
+
+            try {
+                const { doc, setDoc } = window.firebaseFns;
+                await setDoc(doc(window.firebaseDb, "siteSettings", "theme"), themeData);
+                applyTheme(themeData);
+                alert("Design settings saved");
+            } catch (error) {
+                console.error("Could not save design settings:", error);
+                alert("Could not save design settings");
+            }
+        }
+
+        function applyTheme(data) {
+            if (data.fontFamily) {
+                document.body.style.fontFamily = data.fontFamily;
+            }
+            if (data.headingColor) {
+                document.getElementById("pageTitle").style.color = data.headingColor;
+            }
+            if (data.cardBackground) {
+                document.querySelectorAll(".card").forEach(card => {
+                    card.style.background = data.cardBackground;
+                });
+            }
+            if (data.themeColor && data.accentColor) {
+                document.body.style.background =
+                    `linear-gradient(135deg, ${data.themeColor} 0%, ${data.accentColor} 100%)`;
+            }
+        }
+
+        async function loadStudents() {
+            const { collection, getDocs } = window.firebaseFns;
+            const snapshot = await getDocs(collection(window.firebaseDb, studentCollectionName));
+            students = snapshot.docs.map(docSnap => normalizeStudent(docSnap.data(), docSnap.id));
+            renderTable();
+        }
+
+        async function addStudent() {
+            if (!isAdmin) {
+                alert("Only admin can add students");
+                return;
+            }
+
+            const nameInput = document.getElementById('newStudentName');
+            const name = nameInput.value.trim();
+
+            if (!name) {
+                alert('Please enter a student name');
+                return;
+            }
+
+            if (students.find(s => (s.name || "").toLowerCase() === name.toLowerCase())) {
+                alert('Student already exists!');
+                return;
+            }
+
+            const student = {
+                name,
+                email: "",
+                university: "",
+                status: "active",
+                points: 0,
+                rank: 0,
+                tier: "Bronze",
+                tasksCompleted: 0,
+                lastUpdated: null,
+                tasks: emptyTasks()
+            };
+
+            try {
+                const { collection, addDoc, serverTimestamp } = window.firebaseFns;
+                await addDoc(collection(window.firebaseDb, studentCollectionName), {
+                    ...student,
+                    lastUpdated: serverTimestamp()
+                });
+                nameInput.value = '';
+                await loadStudents();
+            } catch (error) {
+                console.error("Error adding student:", error);
+                alert("Could not add student.");
+            }
+        }
+
+        async function deleteStudent(index) {
+            if (!isAdmin) {
+                alert("Only admin can delete students");
+                return;
+            }
+
+            const student = students[index];
+            if (!student) return;
+
+            if (confirm(`Are you sure you want to delete ${student.name}?`)) {
+                try {
+                    const { doc, deleteDoc } = window.firebaseFns;
+                    await deleteDoc(doc(window.firebaseDb, studentCollectionName, student.id));
+                    await loadStudents();
+                } catch (error) {
+                    console.error("Error deleting student:", error);
+                    alert("Could not delete student.");
+                }
+            }
+        }
+
+        function calculateTotal(student) {
+            let total = 0;
+            const tasks = student.tasks || {};
+            Object.keys(taskPoints).forEach(task => {
+                total += (Number(tasks[task]) || 0) * taskPoints[task];
+            });
+            return total;
+        }
+
+        function countTasks(student) {
+            const tasks = student.tasks || {};
+            return Object.values(tasks).reduce((sum, val) => sum + (Number(val) || 0), 0);
+        }
+
+        function getTier(points) {
+            if (points >= 300) return { name: 'Diamond', class: 'diamond' };
+            if (points >= 200) return { name: 'Gold', class: 'gold' };
+            if (points >= 100) return { name: 'Platinum', class: 'platinum' };
+            return { name: 'Bronze', class: 'bronze' };
+        }
+
+        async function updateTask(studentIndex, taskKey, value) {
+            if (!isAdmin) {
+                alert("Only admin can edit points");
+                return;
+            }
+
+            const numValue = parseInt(value) || 0;
+            const student = students[studentIndex];
+            if (!student) return;
+
+            if (!student.tasks) student.tasks = emptyTasks();
+            student.tasks[taskKey] = Math.max(0, numValue);
+
+            const total = calculateTotal(student);
+            const tier = getTier(total);
+
+            try {
+                const { doc, updateDoc, serverTimestamp } = window.firebaseFns;
+                await updateDoc(doc(window.firebaseDb, studentCollectionName, student.id), {
+                    name: student.name,
+                    email: student.email || "",
+                    university: student.university || "",
+                    status: student.status || "active",
+                    tasks: student.tasks,
+                    points: total,
+                    tier: tier.name,
+                    tasksCompleted: countTasks(student),
+                    lastUpdated: serverTimestamp()
+                });
+                await loadStudents();
+            } catch (error) {
+                console.error("Error updating task:", error);
+                alert("Could not update points.");
+            }
+        }
+
+        function renderTaskCell(student, taskKey) {
+            const value = student.tasks?.[taskKey] || 0;
+
+            if (isAdmin) {
+                return `
+                    <input
+                        type="number"
+                        class="task-input"
+                        min="0"
+                        value="${value}"
+                        onchange="updateTask(${student.originalIndex}, '${taskKey}', this.value)"
+                    >
+                `;
+            }
+
+            return `<span class="task-value">${value}</span>`;
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById('tableBody');
+
+            const sortedStudents = students
+                .map((student, index) => ({
+                    ...student,
+                    originalIndex: index,
+                    total: calculateTotal(student)
+                }))
+                .sort((a, b) => b.total - a.total)
+                .map((student, index) => ({
+                    ...student,
+                    displayRank: index + 1
+                }));
+
+            let html = '';
+
+            sortedStudents.forEach((student) => {
+                const tier = getTier(student.total);
+                const rankClass = student.displayRank <= 3 ? `rank-${student.displayRank}` : '';
+
+                html += `
+                    <tr>
+                        <td class="rank ${rankClass}">#${student.displayRank}</td>
+                        <td class="student-name">${student.name || ""}</td>
+
+                        <td>${renderTaskCell(student, 'ambassador_month')}</td>
+                        <td>${renderTaskCell(student, 'outreach_referral')}</td>
+                        <td>${renderTaskCell(student, 'outreach_event')}</td>
+                        <td>${renderTaskCell(student, 'outreach_grant_proposal')}</td>
+                        <td>${renderTaskCell(student, 'outreach_research_group')}</td>
+                        <td>${renderTaskCell(student, 'outreach_grant_secured')}</td>
+                        <td>${renderTaskCell(student, 'social_post')}</td>
+                        <td>${renderTaskCell(student, 'social_carousel')}</td>
+                        <td>${renderTaskCell(student, 'social_reel')}</td>
+                        <td>${renderTaskCell(student, 'graphics_poster')}</td>
+                        <td>${renderTaskCell(student, 'graphics_brochure')}</td>
+                        <td>${renderTaskCell(student, 'graphics_ppt')}</td>
+                        <td>${renderTaskCell(student, 'content_caption')}</td>
+                        <td>${renderTaskCell(student, 'content_carousel')}</td>
+                        <td>${renderTaskCell(student, 'content_article')}</td>
+                        <td>${renderTaskCell(student, 'content_newsletter')}</td>
+                        <td>${renderTaskCell(student, 'content_grant_proposal')}</td>
+
+                        <td class="total-points">${student.total}</td>
+                        <td><span class="tier-label tier-label-${tier.class}">${tier.name}</span></td>
+                        <td>${isAdmin ? `<button class="delete-btn" onclick="deleteStudent(${student.originalIndex})">Delete</button>` : ""}</td>
+                    </tr>
+                `;
+            });
+
+            tbody.innerHTML = html;
+        }
+
+        document.getElementById('newStudentName').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                addStudent();
+            }
+        });
+
+        async function initApp() {
+            try {
+                await waitForFirebase();
+            } catch (error) {
+                console.error(error);
+                alert("Firebase is not connected yet.");
+                return;
+            }
+
+            const { onAuthStateChanged, doc, getDoc } = window.firebaseFns;
+
+            try {
+                const themeSnap = await getDoc(doc(window.firebaseDb, "siteSettings", "theme"));
+                if (themeSnap.exists()) {
+                    applyTheme(themeSnap.data());
+                }
+            } catch (error) {
+                console.error("Theme load error:", error);
+            }
+
+            onAuthStateChanged(window.firebaseAuth, async (user) => {
+                isAdmin = !!user && user.email === ADMIN_EMAIL;
+
+                document.getElementById("adminStatus").textContent = isAdmin
+                    ? `Admin mode: ${user.email}`
+                    : "Viewer mode";
+
+                document.getElementById("adminControls").style.display = isAdmin ? "flex" : "none";
+                document.getElementById("themeControls").style.display = isAdmin ? "block" : "none";
+
+                if (isAdmin) {
+                    await loadThemeSettings();
+                }
+
+                try {
+                    await loadStudents();
+                } catch (error) {
+                    console.error("Load error:", error);
+                    alert("Could not load leaderboard data from Firebase.");
+                }
+            });
+        }
+
+        initApp();
+    </script>
+</body>
+</html>
